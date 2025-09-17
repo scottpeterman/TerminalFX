@@ -81,7 +81,7 @@ public class Terminal extends TerminalView {
         if (Objects.nonNull(terminalPath) && Files.exists(terminalPath)) {
             this.process = PtyProcess.exec(termCommand, envs, terminalPath.toString());
         } else {
-            this.process = PtyProcess.exec(termCommand, envs);
+            this.process = PtyProcess.exec(termCommand, envs, getUserHome().toString());
         }
 
         columnsProperty().addListener(evt -> updateWinSize());
@@ -99,9 +99,13 @@ public class Terminal extends TerminalView {
     }
 
     private Path getDataDir() {
-        final String userHome = System.getProperty("user.home");
-        final Path dataDir = Paths.get(userHome).resolve(".terminalfx");
+        final Path dataDir = getUserHome().resolve(".terminalfx");
         return dataDir;
+    }
+
+    private Path getUserHome() {
+        final String userHome = System.getProperty("user.home");
+        return Paths.get(userHome);
     }
 
     public Path getTerminalPath() {

@@ -10,7 +10,7 @@ import java.util.concurrent.*;
 public class ThreadHelper {
 
     private static final Semaphore uiSemaphore = new Semaphore(1);
-    private static final ExecutorService singleExecutorService = Executors.newSingleThreadExecutor();
+    private static final ExecutorService singleExecutorService = Executors.newSingleThreadExecutor(Thread.ofVirtual().factory());
 
     // Runs task in JavaFX Thread
     public static void runActionLater(final Runnable runnable) {
@@ -75,6 +75,11 @@ public class ThreadHelper {
     public static void stopExecutorService() {
         if (!singleExecutorService.isShutdown()) {
             singleExecutorService.shutdown();
+            try {
+                singleExecutorService.awaitTermination(1, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+            }
         }
     }
 
